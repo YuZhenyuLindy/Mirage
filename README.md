@@ -1,6 +1,6 @@
 # Mirage: Representation-Level Certification of Visual Unlearning
 
-Official implementation of **"Can Vision Models Truly Forget? *Mirage*: Representation-Level Certification of Visual Unlearning"** (ECCV 2026).
+Official implementation of **"Can Vision Models Truly Forget? *Mirage*: Representation-Level Certification of Visual Unlearning"** .
 
 ## Overview
 
@@ -127,7 +127,6 @@ mirage-release/
 @inproceedings{mirage2026,
   title={Can Vision Models Truly Forget? Mirage: Representation-Level Certification of Visual Unlearning},
   author={Anonymous},
-  booktitle={European Conference on Computer Vision (ECCV)},
   year={2026}
 }
 ```
