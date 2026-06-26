@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Per-class LPR Gap (Appendix C)
-===============================
 For each class as the forget target, compute LPR gap (method_LPR - retrain_LPR).
 Shows the forgetting illusion is not specific to any one class.
 
@@ -42,7 +41,6 @@ DATASETS = [
     ('COVID19',  'resnet18', 4),
 ]
 
-
 def _cleanup(device, *models):
     for m in models:
         if m is not None:
@@ -51,12 +49,9 @@ def _cleanup(device, *models):
     gc.collect()
     if 'cuda' in str(device): torch.cuda.empty_cache()
 
-
 def run_one_dataset(ds_name, default_arch, total_classes, device, data_root,
                     skip_classes=None, skip_seeds=None):
-    print(f"\n{'='*60}")
     print(f"  {ds_name} — Per-class LPR Gap ({total_classes} classes)")
-    print(f"{'='*60}")
 
     # For CIFAR100, sample every 10th class to keep runtime reasonable
     if total_classes > 20:
@@ -154,7 +149,6 @@ def run_one_dataset(ds_name, default_arch, total_classes, device, data_root,
 
     return rows
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--datasets", nargs="+", default=None,
@@ -206,7 +200,6 @@ def main():
         print(f"\nSaved results/perclass_all.csv ({len(df_all)} rows)")
 
     print(f"\nDone: {datetime.now()}")
-
 
 if __name__ == "__main__":
     main()

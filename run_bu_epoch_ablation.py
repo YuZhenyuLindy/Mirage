@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 BU Epoch Ablation (supplement to Table 4)
-==========================================
 Vary boundary_unlearn epochs {1,3,5,10,20} — same grid as the existing
 Target epoch ablation — to answer:
 
@@ -43,7 +42,6 @@ DATASETS = [
 ]
 EPOCH_VALUES = [1, 3, 5, 10, 20]
 
-
 def _cleanup(device, *models):
     for m in models:
         if m is not None:
@@ -52,11 +50,8 @@ def _cleanup(device, *models):
     gc.collect()
     if 'cuda' in str(device): torch.cuda.empty_cache()
 
-
 def run_one_dataset(ds_name, default_arch, device, data_root):
-    print(f"\n{'='*60}")
     print(f"  {ds_name} — BU Epoch Ablation")
-    print(f"{'='*60}")
 
     unlearn_labels = [0]
     rows = []
@@ -151,7 +146,6 @@ def run_one_dataset(ds_name, default_arch, device, data_root):
 
     return rows
 
-
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     data_root = "./data_raw"
@@ -201,7 +195,6 @@ def main():
             print(f"    ep={ep:2d}: Dr={dr_m:.1f}% LPR={lpr_m:.1f}±{lpr_s:.1f} Δ={delta:+.1f}")
 
     print(f"\nDone: {datetime.now()}")
-
 
 if __name__ == "__main__":
     main()

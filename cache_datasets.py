@@ -18,7 +18,6 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from mirage_lib import ModelNet10Dataset, ImageFolderFlat
 
-
 def cache_modelnet10(data_root):
     """Cache ModelNet10: .off → rendered depth images."""
     for split_name, train in [('train', True), ('test', False)]:
@@ -40,7 +39,6 @@ def cache_modelnet10(data_root):
         labels = torch.tensor(labels, dtype=torch.long)
         torch.save({'images': images, 'labels': labels}, cache_path)
         print(f"  Saved {cache_path}: {images.shape}, {time.time()-t0:.1f}s")
-
 
 def cache_image_folder(data_root, name, train_dir, test_dir):
     """Cache image folder dataset: disk images → resized 32x32 tensors.
@@ -77,7 +75,6 @@ def cache_image_folder(data_root, name, train_dir, test_dir):
         classes = ds.classes
         torch.save({'images': images, 'labels': labels, 'classes': classes}, cache_path)
         print(f"  Saved {cache_path}: {images.shape}, {time.time()-t0:.1f}s")
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -116,7 +113,6 @@ def main():
         print(f"\n[3/3] COVID19 — skipped ({cv_train} not found)")
 
     print("\nDone! All cached datasets will be auto-loaded by fast_datasets.py")
-
 
 if __name__ == "__main__":
     main()

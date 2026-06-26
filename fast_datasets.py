@@ -20,7 +20,6 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 
 import mirage_lib
 
-
 class CachedModelNet10(Dataset):
     """Load ModelNet10 from pre-rendered .pt cache."""
     def __init__(self, root, train=True, transform=None, **kwargs):
@@ -39,7 +38,6 @@ class CachedModelNet10(Dataset):
         if self.transform:
             img = self.transform(img)
         return img, self.targets[idx]
-
 
 class CachedImageDataset(Dataset):
     """Load BrainTumor/COVID19 from pre-cached .pt file.
@@ -65,7 +63,6 @@ class CachedImageDataset(Dataset):
         if self.train and torch.rand(1).item() > 0.5:
             img = torch.flip(img, [2])  # flip width dimension
         return img, self.targets[idx]
-
 
 # Monkey-patch get_dataset to use caches when available
 _orig_get_dataset = mirage_lib.get_dataset

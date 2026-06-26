@@ -16,15 +16,11 @@ Usage:
 import argparse, os, sys, shutil, subprocess, zipfile
 import numpy as np
 
-
 def run(cmd, **kwargs):
     print(f"  $ {cmd}")
     subprocess.run(cmd, shell=True, check=True, **kwargs)
 
-
-# ====================================================================
-# 1. ModelNet10
-# ====================================================================
+# ModelNet10
 def prepare_modelnet10(data_root):
     dest = os.path.join(data_root, 'ModelNet10')
     if os.path.isdir(dest) and len(os.listdir(dest)) >= 10:
@@ -51,10 +47,7 @@ def prepare_modelnet10(data_root):
     else:
         print("[ModelNet10] WARNING: extraction may have failed, check manually")
 
-
-# ====================================================================
-# 2. Brain Tumor MRI
-# ====================================================================
+# Brain Tumor MRI
 def prepare_brain_tumor(data_root):
     dest = os.path.join(data_root, 'brain_tumor')
     train_dir = os.path.join(dest, 'Training')
@@ -102,10 +95,7 @@ def prepare_brain_tumor(data_root):
     else:
         print("[BrainTumor] WARNING: directory structure may need manual fixing")
 
-
-# ====================================================================
-# 3. COVID-19 Radiography
-# ====================================================================
+# COVID-19 Radiography
 def prepare_covid19(data_root):
     dest = os.path.join(data_root, 'covid19')
     train_dir = os.path.join(dest, 'train')
@@ -196,10 +186,7 @@ def prepare_covid19(data_root):
                if os.path.isdir(os.path.join(train_dir, d))]
     print(f"[COVID19] OK — {len(classes)} classes: {classes}")
 
-
-# ====================================================================
-# 4. Yahoo Answers (TF-IDF features)
-# ====================================================================
+# Yahoo Answers (TF-IDF features)
 def prepare_yahoo_answers(data_root):
     dest = os.path.join(data_root, 'yahoo_answers')
     train_npz = os.path.join(dest, 'features_train.npz')
@@ -302,10 +289,7 @@ def prepare_yahoo_answers(data_root):
     print(f"[YahooAnswers] OK — train: {X_train.shape}, test: {X_test.shape}, "
           f"feature_dim={X_train.shape[1]}")
 
-
-# ====================================================================
 # Main
-# ====================================================================
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data-root', default='./data_raw')
@@ -325,7 +309,6 @@ def main():
     print("\n" + "=" * 50)
     print("Dataset preparation complete!")
     print("=" * 50)
-
 
 if __name__ == '__main__':
     main()

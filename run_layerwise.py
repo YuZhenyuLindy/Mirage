@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Layer-wise Recovery Analysis (Appendix B)
-==========================================
 Extract features at each internal layer of the passive models,
 then run LPR at each layer to show WHERE information is retained.
 
@@ -65,7 +64,6 @@ TAP_POINTS = {
     'block_C': 19,  # after 2nd ReLU, 256-ch (final)
 }
 
-
 def extract_layerwise_features(model, loader, device, tap_index):
     """Extract features from a specific layer of each passive model.
 
@@ -102,7 +100,6 @@ def extract_layerwise_features(model, loader, device, tap_index):
         features = np.nan_to_num(features, nan=0.0, posinf=0.0, neginf=0.0)
     return features, labels
 
-
 def lpr_from_features(features, labels, unlearn_labels, seed=42):
     """Run LPR on pre-extracted features (same logic as mirage_lib)."""
     bl = np.isin(labels, unlearn_labels).astype(int)
@@ -123,7 +120,6 @@ def lpr_from_features(features, labels, unlearn_labels, seed=42):
         auroc = 0.5
     return acc, auroc
 
-
 def _cleanup(device, *models):
     for m in models:
         if m is not None:
@@ -132,11 +128,8 @@ def _cleanup(device, *models):
     gc.collect()
     if 'cuda' in str(device): torch.cuda.empty_cache()
 
-
 def run_one_dataset(ds_name, default_arch, device, data_root):
-    print(f"\n{'='*60}")
     print(f"  {ds_name} — Layer-wise Recovery")
-    print(f"{'='*60}")
 
     unlearn_labels = [0]
     rows = []
@@ -229,7 +222,6 @@ def run_one_dataset(ds_name, default_arch, device, data_root):
 
     return rows
 
-
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     data_root = "./data_raw"
@@ -277,7 +269,6 @@ def main():
             print(line)
 
     print(f"\nDone: {datetime.now()}")
-
 
 if __name__ == "__main__":
     main()

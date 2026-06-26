@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Class Ablation — Full Methods (supplement to existing class ablation)
-=====================================================================
 The existing class ablation only includes Retrain + Target.
 This adds BU and FT to show that the "forgetting illusion" is
 consistent across forget-classes and methods.
@@ -52,13 +51,11 @@ ALL_DATASETS = [
     ('YahooAnswers', 'mlp'),
 ]
 
-
 def _get_ablation_classes(num_classes, max_n=4):
     """Select up to max_n evenly-spaced classes for forget-class ablation."""
     if num_classes <= max_n:
         return list(range(num_classes))
     return np.linspace(0, num_classes - 1, max_n, dtype=int).tolist()
-
 
 def _cleanup(device, *models):
     for m in models:
@@ -71,12 +68,9 @@ def _cleanup(device, *models):
     if 'cuda' in str(device):
         torch.cuda.empty_cache()
 
-
 def run_one_dataset(ds_name, default_arch, device, data_root, skip_classes=None,
                     skip_seeds=None):
-    print(f"\n{'='*60}")
     print(f"  {ds_name} — Class Ablation (Full Methods)")
-    print(f"{'='*60}")
 
     # Determine classes to ablate
     _train, _test, num_classes, in_ch, img_size = get_dataset(ds_name, data_root)
@@ -202,7 +196,6 @@ def run_one_dataset(ds_name, default_arch, device, data_root, skip_classes=None,
 
     return ds_rows
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--datasets", nargs="+", default=None)
@@ -266,7 +259,6 @@ def main():
         print(f"\nSaved {path} ({len(df_all)} rows)")
 
     print(f"\nDone: {datetime.now()}")
-
 
 if __name__ == "__main__":
     main()

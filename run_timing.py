@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Timing / Computational Cost (Appendix E)
-==========================================
 Measure wall-clock time for each unlearning method + Mirage audit overhead.
 
 Datasets: All 7
@@ -47,7 +46,6 @@ ALL_DATASETS = [
     ('YahooAnswers', 'mlp'),
 ]
 
-
 def _cleanup(device, *models):
     for m in models:
         if m is not None:
@@ -56,11 +54,8 @@ def _cleanup(device, *models):
     gc.collect()
     if 'cuda' in str(device): torch.cuda.empty_cache()
 
-
 def run_one_dataset(ds_name, default_arch, device, data_root, skip_seeds=None):
-    print(f"\n{'='*60}")
     print(f"  {ds_name} — Timing")
-    print(f"{'='*60}")
 
     unlearn_labels = [0]
     rows = []
@@ -161,7 +156,6 @@ def run_one_dataset(ds_name, default_arch, device, data_root, skip_seeds=None):
 
     return rows
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--datasets", nargs="+", default=None)
@@ -225,7 +219,6 @@ def main():
                       f"{sub['total_time'].mean():8.2f}")
 
     print(f"\nDone: {datetime.now()}")
-
 
 if __name__ == "__main__":
     main()

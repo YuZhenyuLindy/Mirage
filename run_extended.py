@@ -40,7 +40,6 @@ from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-
 class TeeStream:
     """Write to both console and log file simultaneously."""
     def __init__(self, log_file, stream):
@@ -60,7 +59,6 @@ class TeeStream:
     def fileno(self):
         return self.stream.fileno()
 
-
 from torch.utils.data import DataLoader
 
 from mirage_lib import (
@@ -76,10 +74,7 @@ from mirage_lib import (
     visualize_tsne, _free_model,
 )
 
-
-# ============================================================
 # Constants
-# ============================================================
 
 ALL_DATASETS = [
     ('MNIST',        'resnet18'),
@@ -106,23 +101,16 @@ K_VALUES = {
 
 SEEDS = [42, 123, 456]
 
-
-# ============================================================
 # Helpers
-# ============================================================
 
 def banner(title):
-    print(f"\n{'='*70}")
     print(f"  {title}")
-    print(f"{'='*70}\n")
-
 
 def _get_ablation_classes(num_classes, max_n=4):
     """Select up to max_n evenly-spaced classes for forget-class ablation."""
     if num_classes <= max_n:
         return list(range(num_classes))
     return np.linspace(0, num_classes - 1, max_n, dtype=int).tolist()
-
 
 def _setup_experiment(dataset_name, unlearn_labels, device, data_root,
                       num_parties=2):
@@ -174,7 +162,6 @@ def _setup_experiment(dataset_name, unlearn_labels, device, data_root,
         )
     )
 
-
 def _cleanup(device, *models):
     """Free GPU memory for multiple models."""
     for m in models:
@@ -187,10 +174,7 @@ def _cleanup(device, *models):
     if 'cuda' in str(device):
         torch.cuda.empty_cache()
 
-
-# ============================================================
-# 1. Yahoo Answers — CRITICAL missing data
-# ============================================================
+# Yahoo Answers — CRITICAL missing data
 
 def run_yahoo_experiments(device, data_root='./data_raw'):
     """Run full Yahoo Answers experiments: output metrics + Mirage diagnostics.
@@ -208,10 +192,7 @@ def run_yahoo_experiments(device, data_root='./data_raw'):
             device=device, data_root=data_root
         )
 
-
-# ============================================================
-# 2. Sample-Level Unlearning — ALL 7 datasets
-# ============================================================
+# Sample-Level Unlearning — ALL 7 datasets
 
 def run_sample_level_experiments(device, data_root='./data_raw'):
     """Sample-level unlearning: forget random 5%/10% of training samples.
@@ -246,14 +227,9 @@ def run_sample_level_experiments(device, data_root='./data_raw'):
     df = pd.DataFrame(all_rows)
     csv_path = 'results/sample_level_all.csv'
     df.to_csv(csv_path, index=False)
-    print(f"\n{'='*60}")
     print(f"Sample-level results saved to {csv_path} ({len(df)} rows)")
-    print(f"{'='*60}")
 
-
-# ============================================================
-# 3. K-Party Ablation — ALL 7 datasets
-# ============================================================
+# K-Party Ablation — ALL 7 datasets
 
 def run_kparty_experiments(device, data_root='./data_raw'):
     """K-party ablation across all 7 datasets.
@@ -291,14 +267,9 @@ def run_kparty_experiments(device, data_root='./data_raw'):
     df = pd.DataFrame(all_rows)
     csv_path = 'results/kparty_all.csv'
     df.to_csv(csv_path, index=False)
-    print(f"\n{'='*60}")
     print(f"K-party results saved to {csv_path} ({len(df)} rows)")
-    print(f"{'='*60}")
 
-
-# ============================================================
-# 4. t-SNE Visualization — ALL 7 datasets
-# ============================================================
+# t-SNE Visualization — ALL 7 datasets
 
 def run_tsne_visualization(device, data_root='./data_raw'):
     """Generate t-SNE feature visualizations for all 7 datasets.
@@ -372,10 +343,7 @@ def run_tsne_visualization(device, data_root='./data_raw'):
             print(f"  [ERROR] t-SNE {ds_name}: {e}")
             import traceback; traceback.print_exc()
 
-
-# ============================================================
-# 5. Forget-Class Ablation — ALL 7 datasets
-# ============================================================
+# Forget-Class Ablation — ALL 7 datasets
 
 def run_class_ablation(device, data_root='./data_raw'):
     """Vary which class is forgotten to show the gap is not class-specific.
@@ -496,15 +464,10 @@ def run_class_ablation(device, data_root='./data_raw'):
         df = pd.DataFrame(grand_rows)
         csv_path = 'results/class_ablation_all.csv'
         df.to_csv(csv_path, index=False)
-        print(f"\n{'='*60}")
         print(f"Class ablation (all datasets) saved to {csv_path} "
               f"({len(df)} rows)")
-        print(f"{'='*60}")
 
-
-# ============================================================
-# 6. Unlearning Epochs Ablation — ALL 7 datasets
-# ============================================================
+# Unlearning Epochs Ablation — ALL 7 datasets
 
 def run_epoch_ablation(device, data_root='./data_raw'):
     """Vary unlearning epochs {1,3,5,10,20} for Target method.
@@ -626,15 +589,10 @@ def run_epoch_ablation(device, data_root='./data_raw'):
         df = pd.DataFrame(grand_rows)
         csv_path = 'results/epoch_ablation_all.csv'
         df.to_csv(csv_path, index=False)
-        print(f"\n{'='*60}")
         print(f"Epoch ablation (all datasets) saved to {csv_path} "
               f"({len(df)} rows)")
-        print(f"{'='*60}")
 
-
-# ============================================================
 # Main
-# ============================================================
 
 def main():
     parser = argparse.ArgumentParser(
@@ -695,17 +653,14 @@ def main():
         traceback.print_exc()
     finally:
         elapsed = time.time() - t0
-        print(f"\n{'='*70}")
         print(f"  ALL DONE! Total time: {elapsed/60:.1f} minutes")
         print(f"  End time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"{'='*70}")
 
         if log_file:
             sys.stdout = tee_out.stream
             sys.stderr = tee_err.stream
             log_file.close()
             print(f"Log saved: {log_path}")
-
 
 if __name__ == '__main__':
     main()

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Nonlinear Probe Recovery (Appendix D)
-======================================
 Replace linear probe (LogisticRegression) with MLP probe to show
 that the LPR gap is not an artifact of linear probe capacity.
 
@@ -45,7 +44,6 @@ ALL_DATASETS = [
     ('YahooAnswers', 'mlp'),
 ]
 
-
 def _cleanup(device, *models):
     for m in models:
         if m is not None:
@@ -54,11 +52,8 @@ def _cleanup(device, *models):
     gc.collect()
     if 'cuda' in str(device): torch.cuda.empty_cache()
 
-
 def run_one_dataset(ds_name, default_arch, device, data_root):
-    print(f"\n{'='*60}")
     print(f"  {ds_name} — Nonlinear Probe")
-    print(f"{'='*60}")
 
     unlearn_labels = [0]
     rows = []
@@ -149,7 +144,6 @@ def run_one_dataset(ds_name, default_arch, device, data_root):
 
     return rows
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--datasets", nargs="+", default=None,
@@ -204,7 +198,6 @@ def main():
                       f"MLP={sub['lpr_mlp'].mean():.1f}%")
 
     print(f"\nDone: {datetime.now()}")
-
 
 if __name__ == "__main__":
     main()

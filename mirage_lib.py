@@ -23,9 +23,7 @@ from glob import glob
 
 warnings.filterwarnings('ignore')
 
-# ============================================================
 # Reproducibility
-# ============================================================
 SEED = 42
 
 def set_seed(seed=SEED):
@@ -37,9 +35,7 @@ def set_seed(seed=SEED):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-# ============================================================
 # Hyperparameters
-# ============================================================
 CONFIG = {
     'lr': 0.01,
     'batch_size': 128,
@@ -58,9 +54,7 @@ CONFIG = {
     'mia_shadow_epochs': 20,
 }
 
-# ============================================================
-# 1. Custom Dataset Classes
-# ============================================================
+# Custom Dataset Classes
 
 class VFLDataset(Dataset):
     """Wraps a dataset to split features for VFL parties."""
@@ -91,7 +85,6 @@ class VFLDataset(Dataset):
                 e = s + chunk if k < self.num_parties - 1 else d
                 parts.append(x[s:e])
             return parts, y
-
 
 class ModelNet10Dataset(Dataset):
     """Load ModelNet10 .off meshes and render as 32x32 depth images."""
@@ -157,7 +150,6 @@ class ModelNet10Dataset(Dataset):
                     verts.append([float(vals[0]), float(vals[1]), float(vals[2])])
         return np.array(verts) if verts else np.zeros((0, 3))
 
-
 class ImageFolderFlat(Dataset):
     """ImageFolder-style dataset for BrainTumor / COVID19."""
     def __init__(self, root, transform=None):
@@ -183,7 +175,6 @@ class ImageFolderFlat(Dataset):
             img = self.transform(img)
         return img, self.targets[idx]
 
-
 class TensorDatasetWithTargets(Dataset):
     """Tensor dataset that exposes .targets for compatibility."""
     def __init__(self, features, labels):
@@ -197,10 +188,7 @@ class TensorDatasetWithTargets(Dataset):
     def __getitem__(self, idx):
         return self.features[idx], self.labels[idx]
 
-
-# ============================================================
-# 2. Dataset Loading
-# ============================================================
+# Dataset Loading
 
 def get_dataset(name='CIFAR10', data_root='./data_raw'):
     """Load dataset. Returns (train_ds, test_ds, num_classes, input_channels, img_size).
@@ -289,7 +277,6 @@ def get_dataset(name='CIFAR10', data_root='./data_raw'):
     else:
         raise ValueError(f"Unsupported dataset: {name}")
 
-
 def prepare_unlearning_data(train_ds, test_ds, unlearn_labels, num_public=40):
     """Split data into Dr, Du, public subsets."""
     if hasattr(train_ds, 'targets'):
@@ -328,10 +315,7 @@ def prepare_unlearning_data(train_ds, test_ds, unlearn_labels, num_public=40):
 
     return Dr_train, Du_train, Dp_u, Dp_r, Dr_test, Du_test
 
-
-# ============================================================
-# 3. Model Definitions
-# ============================================================
+# Model Definitions
 
 class ResNet18Bottom(nn.Module):
     def __init__(self, input_channels=3, input_width=16):
@@ -350,7 +334,6 @@ class ResNet18Bottom(nn.Module):
         self.embedding_dim = 256
     def forward(self, x):
         return self.features(x).view(x.size(0), -1)
-
 
 class VGG16Bottom(nn.Module):
     def __init__(self, input_channels=3, input_width=16):
@@ -372,7 +355,6 @@ class VGG16Bottom(nn.Module):
     def forward(self, x):
         return self.features(x).view(x.size(0), -1)
 
-
 class MLPBottom(nn.Module):
     """Bottom model for tabular / text features (e.g. TF-IDF)."""
     def __init__(self, input_dim=2500):
@@ -390,7 +372,6 @@ class MLPBottom(nn.Module):
     def forward(self, x):
         return self.features(x)
 
-
 class ActiveModel(nn.Module):
     def __init__(self, embedding_dim, num_parties, num_classes):
         super().__init__()
@@ -401,7 +382,6 @@ class ActiveModel(nn.Module):
         )
     def forward(self, embeddings):
         return self.classifier(embeddings)
-
 
 class VFLModel(nn.Module):
     def __init__(self, passive_models, active_model):
@@ -423,7 +403,6 @@ class VFLModel(nn.Module):
     def get_features(self, name='concatenated'):
         return self._intermediate_features.get(name, None)
 
-
 def create_vfl_model(arch, input_channels, input_width, num_parties, num_classes):
     passives = []
     for _ in range(num_parties):
@@ -439,10 +418,7 @@ def create_vfl_model(arch, input_channels, input_width, num_parties, num_classes
     active = ActiveModel(emb, num_parties, num_classes)
     return VFLModel(passives, active)
 
-
-# ============================================================
-# 4. Training
-# ============================================================
+# Training
 
 def train_vfl(model, train_loader, epochs, lr=0.01, device='cpu', verbose=True,
               use_adam=False):
@@ -474,10 +450,7 @@ def train_vfl(model, train_loader, epochs, lr=0.01, device='cpu', verbose=True,
     model._intermediate_features.clear()
     return model
 
-
-# ============================================================
-# 5. Unlearning Methods
-# ============================================================
+# Unlearning Methods
 
 def retrain_from_scratch(arch, in_ch, in_w, n_parties, n_cls, Dr_loader, epochs, lr, device,
                          use_adam=False):
@@ -626,10 +599,7 @@ def manifold_mixup_vfl_unlearn(model, Dp_u_loader, Dp_r_loader,
             opt.zero_grad(); crit(m(px), la).backward(); opt.step()
     return m
 
-
-# ============================================================
-# 6. Evaluation & Mirage Audit
-# ============================================================
+# Evaluation & Mirage Audit
 
 def evaluate_accuracy(model, loader, device='cpu'):
     model.eval(); correct = total = 0
@@ -713,16 +683,12 @@ def feature_separability(features, labels, unlearn_labels):
     s = float(np.linalg.norm(mu_u - mu_r) ** 2 / (vu + vr + 1e-10))
     return s if np.isfinite(s) else 0.0
 
-
-# ============================================================
-# 7. Experiment Runner
-# ============================================================
+# Experiment Runner
 
 def _free_model(model, device):
     model.cpu(); model._intermediate_features.clear()
     del model; gc.collect()
     if 'cuda' in str(device): torch.cuda.empty_cache()
-
 
 def run_single_experiment(dataset_name, arch, unlearn_labels, device='cpu',
                           data_root='./data_raw', train_epochs=None):
@@ -730,9 +696,7 @@ def run_single_experiment(dataset_name, arch, unlearn_labels, device='cpu',
     if train_epochs is None:
         train_epochs = CONFIG['train_epochs']
 
-    print(f"\n{'='*60}")
     print(f"Dataset: {dataset_name} | Arch: {arch} | Unlearn: {unlearn_labels}")
-    print(f"{'='*60}")
 
     train_ds, test_ds, num_classes, in_ch, img_size = get_dataset(dataset_name, data_root)
 
@@ -766,7 +730,7 @@ def run_single_experiment(dataset_name, arch, unlearn_labels, device='cpu',
     Du_test_loader = DataLoader(vfl_DuT,   bs, shuffle=False, num_workers=0)
     full_test_loader = DataLoader(vfl_test, bs, shuffle=False, num_workers=0)
 
-    # 1. Train original
+    # Train original
     print("\n[1/4] Training original VFL model...")
     orig = create_vfl_model(arch, in_ch, input_width, np_, num_classes)
     orig = train_vfl(orig, train_loader, train_epochs, train_lr, device,
@@ -775,18 +739,18 @@ def run_single_experiment(dataset_name, arch, unlearn_labels, device='cpu',
     byu = evaluate_accuracy(orig, Du_test_loader, device)
     print(f"  Baseline: Dr={bdr:.2f}%, yu={byu:.2f}%")
 
-    # 2. Retrain
+    # Retrain
     print("\n[2/4] Retraining from scratch...")
     retrained, rt_time = measure_runtime(
         retrain_from_scratch, arch, in_ch, input_width, np_, num_classes,
         Dr_loader, train_epochs, train_lr, device, use_adam=is_tabular)
 
-    # 3. Pre-extract reference features
+    # Pre-extract reference features
     print("\n[3/4] Extracting reference features...")
     feat_orig, lab_orig = extract_features(orig, full_test_loader, device)
     feat_retr, _ = extract_features(retrained, full_test_loader, device)
 
-    # 4. Unlearning methods
+    # Unlearning methods
     ul_lr = 1e-4 if is_tabular else 0.001  # smaller unlearning lr for Adam
     specs = [
         ('Retrain', None, None, rt_time),
@@ -846,10 +810,7 @@ def run_single_experiment(dataset_name, arch, unlearn_labels, device='cpu',
     print(df.to_string(index=False))
     return results
 
-
-# ============================================================
-# 8. Sample-Level Unlearning
-# ============================================================
+# Sample-Level Unlearning
 
 def prepare_sample_unlearning_data(train_ds, test_ds, forget_ratio=0.05,
                                     seed=42, num_public=40):
@@ -889,7 +850,6 @@ def prepare_sample_unlearning_data(train_ds, test_ds, forget_ratio=0.05,
 
     return Dr_train, Du_train, Dp_u, Dp_r, test_ds, forget_idx, retain_idx
 
-
 def sample_level_lpr(model, train_ds, forget_idx, retain_idx,
                      num_parties=2, device='cpu', seed=42, max_samples=5000):
     """LPR for sample-level: can a probe distinguish forgotten vs retained samples?
@@ -925,16 +885,13 @@ def sample_level_lpr(model, train_ds, forget_idx, retain_idx,
         auroc = 0.5
     return acc, auroc
 
-
 def run_sample_experiment(dataset_name, arch, forget_ratio=0.05, device='cpu',
                            data_root='./data_raw', train_epochs=None, seed=42):
     """Run sample-level unlearning experiment."""
     if train_epochs is None:
         train_epochs = CONFIG['train_epochs']
 
-    print(f"\n{'='*60}")
     print(f"SAMPLE-LEVEL: {dataset_name} | Arch: {arch} | Forget: {forget_ratio*100:.0f}%")
-    print(f"{'='*60}")
 
     train_ds, test_ds, num_classes, in_ch, img_size = get_dataset(dataset_name, data_root)
     is_tabular = (in_ch == 0)
@@ -1030,10 +987,7 @@ def run_sample_experiment(dataset_name, arch, forget_ratio=0.05, device='cpu',
     print(df.to_string(index=False))
     return results
 
-
-# ============================================================
-# 9. K-Party Experiments
-# ============================================================
+# K-Party Experiments
 
 def run_kparty_experiment(dataset_name, arch, unlearn_labels, K_values=(2, 4, 8),
                            device='cpu', data_root='./data_raw', train_epochs=None):
@@ -1052,9 +1006,7 @@ def run_kparty_experiment(dataset_name, arch, unlearn_labels, K_values=(2, 4, 8)
     all_results = {}
 
     for K in K_values:
-        print(f"\n{'='*60}")
         print(f"K-PARTY: {dataset_name} | K={K} | Unlearn: {unlearn_labels}")
-        print(f"{'='*60}")
 
         if is_tabular:
             in_w = img_size // K
@@ -1149,10 +1101,7 @@ def run_kparty_experiment(dataset_name, arch, unlearn_labels, K_values=(2, 4, 8)
     print(df.to_string(index=False))
     return all_results
 
-
-# ============================================================
-# 10. t-SNE Visualization
-# ============================================================
+# t-SNE Visualization
 
 def visualize_tsne(model_dict, loader, unlearn_labels, device='cpu',
                    save_path=None, max_samples=3000, seed=42):

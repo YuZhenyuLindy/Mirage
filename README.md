@@ -1,132 +1,106 @@
 # Mirage: Representation-Level Certification of Visual Unlearning
 
-Official implementation of **"Can Vision Models Truly Forget? *Mirage*: Representation-Level Certification of Visual Unlearning"** .
+Code for the ECCV 2026 paper *Do Vision Models Truly Forget? New Findings from Representation-Level Certification of Visual Unlearning in Vertical Federated Learning*.
 
-## Overview
+Mirage checks whether an unlearned vision model has actually removed a class from its
+representations, rather than only suppressing it at the output. It compares the original
+model, the unlearned model, and a from-scratch retrained reference on their frozen
+embeddings, reporting linear probe recovery (LPR) together with its gap to the retrained
+baseline, centered kernel alignment (CKA), a Fisher-style separability score, and a
+layer-wise recovery profile. The recurring observation is a *forgetting illusion*: methods
+that pass output-level certification often leave the forgotten class linearly recoverable
+in feature space, well above what retraining alone would preserve.
 
-Mirage is a representation-level auditing framework that exposes the *forgetting illusion* in Vertical Federated Learning (VFL) unlearning. While existing methods certify forgetting based on output-level metrics (e.g., accuracy on forgotten classes), Mirage reveals that class-discriminative structure persists in intermediate representations.
-
-The framework comprises four complementary diagnostics:
-
-- **Linear Probe Recovery (LPR)**: Binary classification accuracy of a logistic regression probe on frozen features
-- **Centered Kernel Alignment (CKA)**: Structural similarity between model representations
-- **Feature Separability Scoring**: Fisher-inspired geometric class discrimination metric
-- **Layer-Wise Recovery Analysis**: LPR at multiple network depths
-
-### Key Findings
-
-1. **Forgetting gap**: Methods that pass output-level certification still retain substantial class structure (LPR exceeding retrained baseline by up to 15.4 pp)
-2. **Unlearning trilemma**: No method simultaneously achieves utility, output-level forgetting, and representation-level forgetting
-3. **Class-sample asymmetry**: Class-level forgetting leaves strong traces (LPR up to 97%), while sample-level forgetting is indistinguishable from chance (~50%)
-
-## Setup
+## Installation
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Dataset Preparation
+Requires Python 3.9+ and PyTorch 1.12+.
 
-CIFAR-10, CIFAR-100, and MNIST are downloaded automatically via torchvision. For the remaining datasets (ModelNet10, BrainTumor, COVID-19, Yahoo Answers):
+## Data
+
+MNIST, CIFAR-10 and CIFAR-100 are downloaded automatically through torchvision. The other
+four datasets (ModelNet10, Brain Tumor MRI, COVID-19 Radiography, Yahoo Answers) are
+fetched with:
 
 ```bash
 python prepare_datasets.py
 ```
 
-For faster I/O in repeated experiments, optionally pre-cache slow datasets:
+ModelNet10 and the medical sets can be cached to tensors for faster reloading:
 
 ```bash
 python cache_modelnet10.py
 python cache_datasets.py
 ```
 
-## Experiments
+## Running the experiments
 
-All experiment scripts save results to the `results/` directory.
-
-### Main Experiments (Tables 1 & 2)
-
-7 datasets x 8 unlearning methods x 3 seeds:
+Main comparison — seven datasets, eight methods, seeds 42/123/456:
 
 ```bash
-python run_main.py
-python run_main.py --datasets CIFAR10 COVID19  # subset
+python run_main.py                              # all datasets
+python run_main.py --datasets CIFAR10 COVID19   # a subset
 ```
 
-### Ablation Studies
+Ablations and analyses:
 
-| Script | Description | Paper Section |
-|--------|-------------|---------------|
-| `run_layerwise.py` | Layer-wise LPR at 3 network depths | Appendix B |
-| `run_perclass.py` | Per-class forgetting gap analysis | Appendix C |
-| `run_nonlinear_probe.py` | Linear vs MLP probe comparison | Appendix D |
-| `run_timing.py` | Computational cost measurement | Appendix E |
-| `run_bu_epoch_ablation.py` | BU epoch ablation {1,3,5,10,20} | Table 4 |
-| `run_class_ablation.py` | Forget-class ablation across methods | Supplementary |
+```bash
+python run_bu_epoch_ablation.py   # BU unlearning strength (Table 4)
+python run_layerwise.py           # layer-wise LPR (Appendix A2)
+python run_perclass.py            # per-class forgetting gap (Appendix A3)
+python run_nonlinear_probe.py     # linear vs. MLP probe (Appendix A4)
+python run_timing.py              # audit cost (Appendix A5)
+python run_class_ablation.py      # sensitivity to the forgotten class
+```
 
-### Extended Experiments
+Sample-level unlearning, K-party scaling, and the t-SNE figures are driven by a single
+entry point:
 
 ```bash
 python run_extended.py --exp all --device cuda
 ```
 
-Includes: sample-level unlearning, K-party ablation, t-SNE visualization, epoch ablation.
-
-## Project Structure
-
-```
-mirage-release/
-├── mirage_lib.py              # Core library: models, datasets, training, unlearning, audit
-├── fast_datasets.py           # Cached dataset loaders (monkey-patches mirage_lib)
-├── prepare_datasets.py        # Download ModelNet10, BrainTumor, COVID-19, Yahoo Answers
-├── cache_datasets.py          # Pre-cache slow datasets to .pt files
-├── cache_modelnet10.py        # Pre-render ModelNet10 meshes to tensors
-├── run_main.py                # Main experiment (Tables 1 & 2)
-├── run_layerwise.py           # Layer-wise recovery analysis
-├── run_perclass.py            # Per-class forgetting gap
-├── run_nonlinear_probe.py     # Nonlinear probe comparison
-├── run_timing.py              # Computational cost
-├── run_bu_epoch_ablation.py   # BU epoch ablation
-├── run_class_ablation.py      # Class ablation across methods
-├── run_extended.py            # Extended experiments (sample-level, K-party, t-SNE)
-├── notebooks/
-│   └── Mirage_ECCV_Colab.ipynb  # Complete pipeline in notebook format
-├── results/                   # Pre-computed experiment results (CSV)
-├── requirements.txt
-└── .gitignore
-```
+A self-contained walkthrough of the full pipeline is provided in
+`notebooks/Mirage_ECCV_Colab.ipynb`.
 
 ## Datasets
 
-| Dataset | Domain | Classes | Architecture |
-|---------|--------|---------|--------------|
-| MNIST | Digits | 10 | ResNet-18 |
+| Dataset | Domain | Classes | Backbone |
+|---------|--------|---------|----------|
+| MNIST | Handwritten digits | 10 | ResNet-18 |
 | CIFAR-10 | Natural images | 10 | ResNet-18 |
 | CIFAR-100 | Natural images | 100 | ResNet-18 |
-| ModelNet10 | 3D objects | 10 | ResNet-18 |
-| BrainTumor | Medical MRI | 4 | ResNet-18 |
-| COVID-19 | Medical X-ray | 4 | ResNet-18 |
+| ModelNet10 | 3D objects (depth) | 10 | ResNet-18 |
+| Brain Tumor MRI | Medical imaging | 4 | ResNet-18 |
+| COVID-19 Radiography | Medical imaging | 4 | ResNet-18 |
 | Yahoo Answers | Text (TF-IDF) | 10 | MLP |
 
-## Unlearning Methods
+Features are split equally between two passive parties (VFL setting); the active party
+holds the labels and the top classifier.
 
-| Method | Reference |
-|--------|-----------|
-| Retrain | Baseline (retrain from scratch) |
-| Fine-Tuning (FT) | Continue training without forget data |
-| Fisher | Diagonal Fisher information erasure |
-| Amnesiac | Class-wise logit subtraction |
-| UNSIR | Saliency-guided unlearning |
-| Boundary Unlearning (BU) | Decision boundary shifting |
-| SSD | Sample-wise signed erasure |
-| Target | Maximize logit for forget class |
+## Unlearning methods
+
+| Method | Description |
+|--------|-------------|
+| Retrain | Retrain from scratch on the retained data (reference) |
+| Fine-Tuning (FT) | Fine-tune the trained model on retained data (Golatkar et al., 2020) |
+| Fisher | Fisher-information forgetting (Golatkar et al., 2020) |
+| Amnesiac | Amnesiac unlearning (Graves et al., 2021) |
+| UNSIR | Impair–repair unlearning (Tarun et al., 2023) |
+| Boundary Unlearning (BU) | Decision-boundary shifting (Chen et al., 2023) |
+| SSD | Selective synaptic dampening (Foster et al., 2024) |
+| Target | Few-shot label unlearning via manifold mixup (Gu et al., 2026) |
 
 ## Citation
 
 ```bibtex
-@inproceedings{mirage2026,
-  title={Can Vision Models Truly Forget? Mirage: Representation-Level Certification of Visual Unlearning},
-  author={Anonymous},
+@inproceedings{yu2026mirage,
+  title={Do Vision Models Truly Forget? New Findings from Representation-Level Certification of Visual Unlearning in Vertical Federated Learning},
+  author={Yu, Zhenyu and Zeng, Yangchen and Meng, Chunlei and Yao, Guangzhen and Zhou, Shuigeng},
+  booktitle={European Conference on Computer Vision (ECCV)},
   year={2026}
 }
 ```

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Main Experiment — Per-Seed Results (for ±std in Tables 1 & 2)
-==============================================================
 Re-run the main experiment for 7 datasets × 8 methods × 3 seeds,
 saving per-seed results instead of averaged values.
 
@@ -47,7 +46,6 @@ ALL_DATASETS = [
     ('YahooAnswers', 'mlp'),
 ]
 
-
 def _cleanup(device, *models):
     for m in models:
         if m is not None:
@@ -58,7 +56,6 @@ def _cleanup(device, *models):
     gc.collect()
     if 'cuda' in str(device):
         torch.cuda.empty_cache()
-
 
 def run_one_seed(ds_name, default_arch, seed, device, data_root):
     """Run full pipeline for one dataset + one seed. Returns list of row dicts."""
@@ -183,7 +180,6 @@ def run_one_seed(ds_name, default_arch, seed, device, data_root):
     del feat_orig, feat_retr, lab_orig
     return rows
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--datasets", nargs="+", default=None)
@@ -243,7 +239,6 @@ def main():
     df_all.to_csv(path, index=False)
     print(f"\nSaved {path} ({len(df_all)} rows)")
     print(f"Done: {datetime.now()}")
-
 
 if __name__ == "__main__":
     main()
