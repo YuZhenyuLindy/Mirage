@@ -38,7 +38,7 @@ python cache_datasets.py
 
 ## Running the experiments
 
-Main comparison — seven datasets, eight methods, seeds 42/123/456:
+Main comparison — seven datasets, eight methods:
 
 ```bash
 python run_main.py                              # all datasets
