@@ -1,5 +1,7 @@
 # Mirage: Representation-Level Certification of Visual Unlearning
 
+[![ArXiv](https://img.shields.io/badge/arXiv-2605.20282-red)](https://arxiv.org/pdf/2605.20282)
+
 Code for the ECCV 2026 paper *Do Vision Models Truly Forget? New Findings from Representation-Level Certification of Visual Unlearning in Vertical Federated Learning*.
 
 Mirage checks whether an unlearned vision model has actually removed a class from its
