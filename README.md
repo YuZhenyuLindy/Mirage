@@ -96,6 +96,11 @@ holds the labels and the top classifier.
 | SSD | Selective synaptic dampening (Foster et al., 2024) |
 | Target | Few-shot label unlearning via manifold mixup (Gu et al., 2026) |
 
+## Contact
+For any questions, feel free to reach out:
+
+📧 Email: yuzhenyuyxl@foxmail.com
+
 ## Citation
 
 ```bibtex
