@@ -1,6 +1,6 @@
 # ECCV 2026 - *Mirage*: Representation-Level Certification of Visual Unlearning
 
-[![ArXiv](https://img.shields.io/badge/arXiv-2605.20282-red)](https://arxiv.org/pdf/2605.20282) [![Poster](https://img.shields.io/badge/PDF-Poster-blue)](https://github.com/YuZhenyuLindy/Mirage/blob/main/Poster.pdf) 
+[![ArXiv](https://img.shields.io/badge/arXiv-2605.20282-red)](https://arxiv.org/pdf/2605.20282) [![Poster](https://img.shields.io/badge/PDF-Poster-blue)]([https://github.com/YuZhenyuLindy/Mirage/blob/main/Poster.pdf](https://github.com/YuZhenyuLindy/Mirage/blob/8b2950042b48649b0eb963d0fac6d3e6de2724a1/Poster.pdf)) 
 
 Code for the ECCV 2026 paper **Do Vision Models Truly Forget? New Findings from Representation-Level Certification of Visual Unlearning in Vertical Federated Learning**.
 
