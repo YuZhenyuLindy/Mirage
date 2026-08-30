@@ -1,17 +1,10 @@
 # ECCV 2026 - *Mirage*: Representation-Level Certification of Visual Unlearning
 
-[![ArXiv](https://img.shields.io/badge/arXiv-2605.20282-red)](https://arxiv.org/pdf/2605.20282) [![Poster](https://img.shields.io/badge/PDF-Poster-blue)](https://github.com/YuZhenyuLindy/Mirage/Poster.pdf) 
+[![ArXiv](https://img.shields.io/badge/arXiv-2605.20282-red)](https://arxiv.org/pdf/2605.20282) [![Poster](https://img.shields.io/badge/PDF-Poster-blue)](https://github.com/YuZhenyuLindy/Mirage/blob/main/Poster.pdf) 
 
 Code for the ECCV 2026 paper **Do Vision Models Truly Forget? New Findings from Representation-Level Certification of Visual Unlearning in Vertical Federated Learning**.
 
-Mirage checks whether an unlearned vision model has actually removed a class from its
-representations, rather than only suppressing it at the output. It compares the original
-model, the unlearned model, and a from-scratch retrained reference on their frozen
-embeddings, reporting linear probe recovery (LPR) together with its gap to the retrained
-baseline, centered kernel alignment (CKA), a Fisher-style separability score, and a
-layer-wise recovery profile. The recurring observation is a *forgetting illusion*: methods
-that pass output-level certification often leave the forgotten class linearly recoverable
-in feature space, well above what retraining alone would preserve.
+Mirage checks whether an unlearned vision model has actually removed a class from its representations, rather than only suppressing it at the output. It compares the original model, the unlearned model, and a from-scratch retrained reference on their frozen embeddings, reporting linear probe recovery (LPR) together with its gap to the retrained baseline, centered kernel alignment (CKA), a Fisher-style separability score, and a layer-wise recovery profile. The recurring observation is a *forgetting illusion*: methods that pass output-level certification often leave the forgotten class linearly recoverable in feature space, well above what retraining alone would preserve.
 
 <p align="center">
   <img src="Poster.png" width="1000"/>
@@ -27,9 +20,7 @@ Requires Python 3.9+ and PyTorch 1.12+.
 
 ## Data
 
-MNIST, CIFAR-10 and CIFAR-100 are downloaded automatically through torchvision. The other
-four datasets (ModelNet10, Brain Tumor MRI, COVID-19 Radiography, Yahoo Answers) are
-fetched with:
+MNIST, CIFAR-10 and CIFAR-100 are downloaded automatically through torchvision. The other four datasets (ModelNet10, Brain Tumor MRI, COVID-19 Radiography, Yahoo Answers) are fetched with:
 
 ```bash
 python prepare_datasets.py
@@ -62,15 +53,13 @@ python run_timing.py              # audit cost (Appendix A5)
 python run_class_ablation.py      # sensitivity to the forgotten class
 ```
 
-Sample-level unlearning, K-party scaling, and the t-SNE figures are driven by a single
-entry point:
+Sample-level unlearning, K-party scaling, and the t-SNE figures are driven by a single entry point:
 
 ```bash
 python run_extended.py --exp all --device cuda
 ```
 
-A self-contained walkthrough of the full pipeline is provided in
-`notebooks/Mirage_ECCV_Colab.ipynb`.
+A self-contained walkthrough of the full pipeline is provided in `notebooks/Mirage_ECCV_Colab.ipynb`.
 
 ## Datasets
 
@@ -84,8 +73,7 @@ A self-contained walkthrough of the full pipeline is provided in
 | COVID-19 Radiography | Medical imaging | 4 | ResNet-18 |
 | Yahoo Answers | Text (TF-IDF) | 10 | MLP |
 
-Features are split equally between two passive parties (VFL setting); the active party
-holds the labels and the top classifier.
+Features are split equally between two passive parties (VFL setting); the active party holds the labels and the top classifier.
 
 ## Unlearning methods
 
