@@ -1,8 +1,8 @@
-# Mirage: Representation-Level Certification of Visual Unlearning
+# ECCV 2026 - *Mirage*: Representation-Level Certification of Visual Unlearning
 
-[![ArXiv](https://img.shields.io/badge/arXiv-2605.20282-red)](https://arxiv.org/pdf/2605.20282)
+[![ArXiv](https://img.shields.io/badge/arXiv-2605.20282-red)](https://arxiv.org/pdf/2605.20282) [![Poster](https://img.shields.io/badge/PDF-Poster-blue)](https://github.com/YuZhenyuLindy/Mirage/Poster.pdf) 
 
-Code for the ECCV 2026 paper *Do Vision Models Truly Forget? New Findings from Representation-Level Certification of Visual Unlearning in Vertical Federated Learning*.
+Code for the ECCV 2026 paper **Do Vision Models Truly Forget? New Findings from Representation-Level Certification of Visual Unlearning in Vertical Federated Learning**.
 
 Mirage checks whether an unlearned vision model has actually removed a class from its
 representations, rather than only suppressing it at the output. It compares the original
@@ -12,6 +12,10 @@ baseline, centered kernel alignment (CKA), a Fisher-style separability score, an
 layer-wise recovery profile. The recurring observation is a *forgetting illusion*: methods
 that pass output-level certification often leave the forgotten class linearly recoverable
 in feature space, well above what retraining alone would preserve.
+
+<p align="center">
+  <img src="Poster.png" width="1000"/>
+</p>
 
 ## Installation
 
